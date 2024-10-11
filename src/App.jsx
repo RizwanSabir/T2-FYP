@@ -30,13 +30,13 @@ const App = () => /* const TimeOutAnimation = useRef()*/ /* const [AnimationStat
         {/* <Routes>
           <Route path="/users/:id/reset-password/:token" element={<PasswordReset />} />
         </Routes> */}
-        {/* <Routes>
-          <Route path="/*" element={<CustomerRoutes />} />
-        </Routes> */}
-
         <Routes>
-          <Route path="/*" element={<BrandRoutes />} />
+          <Route path="/*" element={<CustomerRoutes />} />
         </Routes>
+
+        {/* <Routes>
+          <Route path="/*" element={<BrandRoutes />} />
+        </Routes> */}
 
 
 
