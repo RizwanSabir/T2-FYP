@@ -37,9 +37,9 @@ const OverViewLayout = () => {
         <div className="mt-6 ">
 
           <div className="mt-2 grid xs:grid-cols-2 xs:grid-rows-3 gap-y-5  md:grid-cols-3 md:grid-rows-1  gap-y-5 ">
-            <Card Heading="Total Views" totalNumbers="30,412" Percentage="1.5" time="LastMonth" Status={1} />
-            <Card Heading="Total Likes" totalNumbers="30,412" Percentage="1.5" time="LastMonth" Status={0} />
-            <CardWithImage Heading="Budget Spent" totalNumbers="30,412" Percentage="1.5" time="LastMonth" ImageSource="card2.png" />          </div>
+            <Card Heading="Total Queries" totalNumbers="30,412" Percentage="1.5" time="LastMonth" Status={1} />
+            <Card Heading="Pending" totalNumbers="30,412" Percentage="1.5" time="LastMonth" Status={0} />
+            <CardWithImage Heading="Resolve" totalNumbers="30,412" Percentage="1.5" time="LastMonth" ImageSource="card2.png" />          </div>
         </div>
 
       </div>

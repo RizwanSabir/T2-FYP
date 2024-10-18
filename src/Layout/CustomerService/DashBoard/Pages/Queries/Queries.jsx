@@ -2,7 +2,7 @@
 import { useNavigate } from 'react-router-dom';
 import TaskTable from '../../../../../Components/Table/TaskTable';
 
-const Compaign = () => {
+const Queries = () => {
   const navigate = useNavigate();
 
 
@@ -63,4 +63,4 @@ const Compaign = () => {
   )
 }
 
-export default Compaign
+export default Queries

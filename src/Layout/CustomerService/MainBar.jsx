@@ -2,7 +2,8 @@ import { Routes, Route } from 'react-router-dom';
 import Home from './DashBoard/Pages/Home/Home';
 import OverView from './DashBoard/Pages/Home/OverView';
 import ErrorPage from './DashBoard/Pages/ErrorPage/ErrorPage';
-import Compaign from './DashBoard/Pages/Compaign/Compaign';
+import Queries from './DashBoard/Pages/Queries/Queries';
+import Contract from './DashBoard/Pages/Queries/Contract';
 
 const MainBar = () => {
   return (
@@ -15,7 +16,11 @@ const MainBar = () => {
 
 
         </Route>
-        <Route path='Queries' element={<Compaign />} />
+        <Route path='Queries'  >
+        <Route index element={<Queries />} />
+        <Route path='Contract' element={<Contract />} />
+        
+        </Route>
         <Route path="*" element={<ErrorPage />} />
       </Routes>
     </div>
