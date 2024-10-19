@@ -1,6 +1,6 @@
-const STATUS_PENDING = { id: 1, name: "Pending", color: "yellow.400" };
-const STATUS_IN_REVIEW = { id: 2, name: "In Review", color: "blue.300" };
-const STATUS_RESOLVED = { id: 3, name: "Resolved", color: "green.300" };
+const STATUS_PENDING = { id: 1, name: "Pending", };
+const STATUS_IN_REVIEW = { id: 2, name: "In Review",};
+const STATUS_RESOLVED = { id: 3, name: "Resolved", };
 
 export const STATUSES = [
   STATUS_PENDING,

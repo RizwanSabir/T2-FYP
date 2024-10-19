@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   flexRender,
   getCoreRowModel,
@@ -22,30 +22,48 @@ import Modal from './UserModel';
 
 
 
-const TaskTable = () => {
+const TaskTable = ({ DATA ,pagination,setPagination,pageCount}) => {
+
   const [data, setData] = useState(DATA);
   const [columnFilters, setColumnFilters] = useState([]);
   const [selectedRows, setSelectedRows] = useState({});
-  const [ShowIssue, setShowIssue] = useState(true);
   const [selectedRowData, setselectedRowData] = useState(null)
-  const [pagination, setPagination] = useState({
-    pageIndex: 0, //initial page index
-    pageSize: 6, //default page size
-  });
+  
+
+
 
   // Function to remove selected rows
-  const removeSelectedRows = () => {
-    const remainingData = data.filter(
-      (_, index) => !selectedRows[index]
-    );
-    setData(remainingData);
-    setSelectedRows({});
-  };
+  const removeSelectedRows = async () => {
+    console.log("Selected row data is:", selectedRows);
 
+    // Extract customerServiceID from the selected rows
+    const idsToDelete = Object.values(selectedRows).map(row => row.customerServiceID); // Map to get only the IDs
 
-  const handleDeleteRow = (rowIndex, data, setData) => {
-    const updatedData = data.filter((_, index) => index !== rowIndex);
-    setData(updatedData);
+    try {
+      const url = `${import.meta.env.VITE_SERVER_BASE_URL}`;
+
+      // Make a POST request to the server with the customerServiceIDs to delete
+      const response = await fetch(`${url}/DeleteRow`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ customerServiceIDs: idsToDelete }), // Send only the IDs
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete rows from server');
+      }
+
+      // Filter out the rows that were deleted
+      const remainingData = data.filter((_, index) => !selectedRows[index]);
+      setData(remainingData); // Update the local state
+      setSelectedRows({}); // Clear selected rows
+
+      console.log("Rows deleted successfully");
+    } catch (error) {
+      console.error("Error deleting rows:", error);
+    }
   };
 
   const userFilterFn = (row, columnId, filterValue) => {
@@ -64,8 +82,6 @@ const TaskTable = () => {
 
 
 
-
-  // Helper function to dynamically set column size based on screen size
   const getColumnSize = (baseSize) => {
     // Shrink column size for small screens
     if (screenSize === 'xxs' || screenSize === 'xs' || screenSize === 'sm') {
@@ -73,6 +89,15 @@ const TaskTable = () => {
     }
     return baseSize; // Default size for larger screens
   };
+
+
+
+
+
+  
+
+
+
 
   // Define the columns based on the current screen size
   const columns = [
@@ -88,26 +113,28 @@ const TaskTable = () => {
 
     // Conditionally include the Description column only on larger screens
     ...(screenSize !== 'xxs' && screenSize !== 'xs' && screenSize !== 'sm'
-      ? (console.log('Adding Description column for screen size:', screenSize), [
+      ? [
         {
           accessorKey: 'issue',
           header: 'Issue',
           cell: (props) => <p className="poppins-semibold text-[#1a3048cc]">{props.getValue()}</p>,
           size: getColumnSize(80), // Dynamically adjust size
         },
-      ])
+      ]
       : ""), // Exclude Description column on small screens
 
     // Conditionally include the Description column only on larger screens
     ...(screenSize !== 'xxs' && screenSize !== 'xs' && screenSize !== 'sm'
-      ? (console.log('Adding Description column for screen size:', screenSize), [
+      ?
+      //  (console.log('Adding Description column for screen size:', screenSize),
+      [
         {
           accessorKey: 'description',
           header: 'Description',
           cell: (props) => <p className="poppins-semibold text-[#1a3048cc]">{props.getValue()}</p>,
           size: getColumnSize(150),
         },
-      ])
+      ]
       : ""), // Exclude Description column on small screens
     {
       accessorKey: 'status',
@@ -121,14 +148,7 @@ const TaskTable = () => {
         return filterStatuses.includes(status?.id);
       },
     },
-    {
-      id: 'actions',
-      header: 'Actions',
-      cell: ({ row }) => (
-        <DeleteIcon ClickFunction={() => handleDeleteRow(row.index, data, setData)} />
-      ),
-      size: getColumnSize(50), // Dynamically adjust size
-    },
+
 
 
 
@@ -136,12 +156,14 @@ const TaskTable = () => {
 
   const table = useReactTable({
     data,
+    manualPagination: true,
     columns,
     state: {
       columnFilters,
       rowSelection: selectedRows,
       pagination,
     },
+    pageCount:pageCount,
     onRowSelectionChange: setSelectedRows,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
@@ -170,148 +192,169 @@ const TaskTable = () => {
 
   return (
     <>
-      {ShowIssue ?
-
-        <div className='text-[9px] sm:text-[10px] mdm:text-[12px] flex justify-center flex-col items-center montserrat poppins-regular mt-5 mb-10    w-full'>
-          {/* Table Start here */}
-
-          <div className="bg-white  p-4  rounded-xl   lg:w-[800px]" style={{}}>
-
-            <div className='flex items-center flex-col sm:flex-row justify-between   mb-4'>
-              <Filters columnFilters={columnFilters} setColumnFilters={setColumnFilters} />
-              <button
-                onClick={() => { removeSelectedRows(); }}
-                disabled={!Object.keys(selectedRows).length}
-                className={`  p-2 px-4 rounded-2xl text-white   ${!Object.keys(selectedRows).length ? 'bg-red-500 opacity-50 cursor-not-allowed' : 'bg-red-500'}`}>
-                Remove Selected Rows
-              </button>
-            </div>
 
 
+      <div className='text-[9px] sm:text-[10px] mdm:text-[12px] flex justify-center flex-col items-center montserrat poppins-regular mt-5 mb-10    w-full'>
+        {/* Table Start here */}
 
-            <div className=''>
-              {/* Render Table Headers */}
-              <div className='px-2 bg-[#F7F8FA] mx-auto rounded-xl'>
-                {table.getHeaderGroups().map((headerGroup) => (
-                  <div className="tr  flex justify-center" key={headerGroup.id}>
-                    <div className="th">
-                      <input
-                        type="checkbox"
-                        className='hidden md:block custom-checkbox'
-                        {...{
-                          checked: table.getIsAllRowsSelected(),
-                          indeterminate: table.getIsSomeRowsSelected(),
-                          onChange: table.getToggleAllRowsSelectedHandler(),
-                        }}
-                      />
-                    </div>
-                    {headerGroup.headers.map((header) => (
-                      <div
-                        className="th"
-                        key={header.id}
-                        style={{ width: header.getSize() }}
-                      >
-                        {header.column.columnDef.header}
-
-                        <div
-                          onMouseDown={header.getResizeHandler()}
-                          onTouchStart={header.getResizeHandler()}
-                          className={`resizer ${header.column.getIsResizing() ? 'isResizing' : ''}`}
-                        ></div>
-                      </div>
-                    ))}
-                  </div>
-                ))}
-              </div>
-
-
-              {/* Render Table Rows */}
-              <div className=' px-2  rounded-xl'>
-                {table.getRowModel().rows.map((row) => (
-
-
-
-                  <div className="tr flex justify-center cursor-pointer " key={row.id} onClick={(e) => { e.stopPropagation(); setselectedRowData(row) }}>
-                    <div className="td">
-                      <input
-                        type="checkbox"
-                        onClick={() => { setShowIssue(false) }}
-                        className="hidden md:block   custom-checkbox"
-                        checked={selectedRows[row.index]}
-                        onChange={() => {
-                          // Toggle the selected row and then filter out rows with false values
-                          setSelectedRows((prev) => {
-                            const updatedRows = {
-                              ...prev,
-                              [row.index]: !prev[row.index],
-                            };
-                            // Remove rows with false values
-                            const filteredRows = Object.fromEntries(
-                              Object.entries(updatedRows).filter(([key, value]) => value !== false)
-                            );
-                            return filteredRows;
-                          });
-                        }}
-                      />
-                    </div>
-                    {row.getVisibleCells().map((cell) => (
-                      <div key={cell.id} className="td" style={{ width: cell.column.getSize() }}>
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                      </div>
-                    ))}
-                  </div>
-
-
-                ))}
-              </div>
-
-
-              <div className='flex items-center justify-between poppins-semibold'>
-
-                <div className='flex'>
-                  <h1 >Total Users</h1>
-                  <p className='text-black/50'>: 232</p>
-                </div>
-                <div className="flex items-center space-x-4 justify-center ">
-
-
-                  <div className="flex   items-center space-x-4 justify-center ">
-                    <div
-                      onClick={() => table.previousPage()}
-                      disabled={!table.getCanPreviousPage()}
-                      className={`px-3 py-1 border border-gray-300 rounded-md text-gray-700 ${!table.getCanPreviousPage() ? 'cursor-not-allowed opacity-50' : ''}`}>
-                      {'<'}
-                    </div>
-
-                    <p className="">
-                      Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
-                    </p>
-
-                    <div
-                      onClick={() => table.nextPage()}
-                      disabled={!table.getCanNextPage()}
-                      className={`px-3 py-1 border border-gray-300 rounded-md text-gray-700 ${!table.getCanNextPage() ? 'cursor-not-allowed opacity-50' : ''}`}>
-                      {'>'}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-            </div>
+        <div className="bg-white  p-4  rounded-xl   lg:w-[800px]" >
+          {/* Table Top NavBar */}
+          <div className='flex items-center flex-col sm:flex-row justify-between   mb-4'>
+            <Filters columnFilters={columnFilters} setColumnFilters={setColumnFilters} />
+            <button
+              onClick={() => { removeSelectedRows(); }}
+              disabled={!Object.keys(selectedRows).length}
+              className={`  p-2 px-4 rounded-2xl text-white   ${!Object.keys(selectedRows).length ? 'bg-red-500 opacity-50 cursor-not-allowed' : 'bg-red-500'}`}>
+              Remove Selected Rows
+            </button>
+          </div>
+          <div className=''>
+            {/* Render Table Headers */}
+            <TableHeader table={table} />
+            {/* Render Table Rows */}
+            <TableRow     table={table} selectedRows={selectedRows} setSelectedRows={setSelectedRows} setselectedRowData={setselectedRowData} />
+            {/* BottomFooter of Table */}
+            <TableFooter table={table} />
 
           </div>
 
+        </div>
+      </div>
 
-        </div> :
 
-        <div className='border-2 border-red-500 size-[500px] bg-yellow-300'>{ShowIssue}</div>
-      }
 
       {selectedRowData && <Modal rowData={selectedRowData} onClose={() => setselectedRowData(null)} />}
 
     </>
   );
 };
+
+
+const TableRow = ({ table, selectedRows, setSelectedRows, setselectedRowData }) => {
+  return (
+    <div className='px-2 rounded-xl'>
+      {table.getRowModel().rows.map((row) => (
+        <div className="tr flex justify-center cursor-pointer" key={row.id}>
+          <div className="td">
+            <input
+              type="checkbox"
+
+              className="hidden md:block custom-checkbox"
+              checked={selectedRows[row.index] !== undefined} // Check if the row is selected
+              onChange={() => {
+                setSelectedRows((prev) => {
+                  const isSelected = prev[row.index] !== undefined; // Check if the row is already selected
+                  const updatedRows = { ...prev };
+
+                  if (isSelected) {
+                    // If the row is selected, remove it
+                    delete updatedRows[row.index];
+                  } else {
+                    // If the row is not selected, add the row data with the index
+                    updatedRows[row.index] = row.original;
+                  }
+
+                  return updatedRows;
+                });
+              }}
+            />
+          </div>
+
+          {row.getVisibleCells().map((cell) => (
+            <div
+              key={cell.id}
+              onClick={(e) => { e.stopPropagation(); setselectedRowData(row.original); }}
+              className="td"
+              style={{ width: cell.column.getSize() }}
+            >
+              {flexRender(cell.column.columnDef.cell, cell.getContext())}
+            </div>
+          ))}
+        </div>
+      ))}
+    </div>
+  );
+};
+
+
+
+const TableFooter = ({ table }) => {
+
+ 
+  return <>
+    <div className='flex items-center justify-between poppins-semibold'>
+
+      <div className='flex'>
+        <h1 >Total Users</h1>
+        <p className='text-black/50'>: 232</p>
+      </div>
+      <div className="flex items-center space-x-4 justify-center ">
+
+
+        <div className="flex   items-center space-x-4 justify-center ">
+          <div
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+            className={`px-3 py-1 border border-gray-300 rounded-md text-gray-700 ${!table.getCanPreviousPage() ? 'cursor-not-allowed opacity-50' : ''}`}>
+            {'<'}
+          </div>
+
+          <p className="">
+            Page {table.getState().pagination.pageIndex+1} of {table.getPageCount()}
+          </p>
+
+          <div
+            onClick={(e) => { table.nextPage()} }
+            disabled={!table.getCanNextPage()}
+            className={`px-3 py-1 border border-gray-300 rounded-md text-gray-700 ${!table.getCanNextPage() ? 'cursor-not-allowed opacity-50' : ''}`} >
+            {'>'}
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </>
+}
+
+const TableHeader = ({ table, }) => {
+  return <>
+
+    <div className='px-2 bg-[#F7F8FA] mx-auto rounded-xl'>
+      {table.getHeaderGroups().map((headerGroup) => (
+        <div className="tr  flex justify-center" key={headerGroup.id}>
+          <div className="th">
+            <input 
+            
+              type="checkbox"
+              className='hidden md:block custom-checkbox'
+              {...{
+                checked: table.getIsAllRowsSelected(),
+                indeterminate: table.getIsSomeRowsSelected(),
+                onChange: table.getToggleAllRowsSelectedHandler(),
+              }}
+            />
+          </div>
+          {headerGroup.headers.map((header) => (
+            <div
+              className="th"
+              key={header.id}
+              style={{ width: header.getSize() }}
+            >
+              {header.column.columnDef.header}
+
+              <div
+                onMouseDown={header.getResizeHandler()}
+                onTouchStart={header.getResizeHandler()}
+                className={`resizer ${header.column.getIsResizing() ? 'isResizing' : ''}`}
+              ></div>
+            </div>
+          ))}
+        </div>
+      ))}
+    </div>
+
+  </>
+}
 
 
 

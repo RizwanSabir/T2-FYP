@@ -1,13 +1,10 @@
 import React from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
+import useFetch from '../../Hooks/useFetch';
+import { calcLength } from 'framer-motion';
 
 // Sample Data
-const data = [
-  { name: 'Contract', value: 31 },
-  { name: 'Payment', value: 15},
-  { name: 'Account', value: 9 },
-  { name: 'Others', value: 8 },
-];
+
 
 // Define specific colors for each category
 const COLORS = {
@@ -17,9 +14,27 @@ const COLORS = {
   Others: '#C0DBD0',   // Red
 };
 
-const CustomPieChart = () => {
+const CustomPieChart = ({data1}) => {
+
+  
+
+ 
+console.log("data is")
+console.log(data1)
+
   // Calculate total users
+
+  const data = [
+    { name: 'Contract', value: parseInt(data1.Contract) },
+    { name: 'Payment', value: parseInt(data1.Payment)},
+    { name: 'Account', value:parseInt(data1.Account )},
+    { name: 'Others', value: parseInt(data1.Others)},
+  ];
+
+
+
   const totalUsers = data.reduce((acc, item) => acc + item.value, 0);
+
 
   return (
  <>

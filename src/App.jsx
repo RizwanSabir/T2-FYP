@@ -18,6 +18,7 @@ import BrandRoutes from './Layout/Brand/BrandRoutes';
 import CustomerRoutes from './Layout/CustomerService/CustomerRoutes';
 import IssueProfile from './Components/Model/IssueProfile';
 import InfluencerRoutes from './Layout/Influencer/InfluencerRoutes';
+import FetchData from './Components/Table/FetchData';
 
 const App = () => /* const TimeOutAnimation = useRef()*/ /* const [AnimationState, setAnimationState] = useState(true)*/ /* useEffect(() => {*/ /*    let  TimeOutAnimation=setTimeout(() => {*/ /*     setAnimationState(false)*/ /*    },8000)*/ /* })*/ (
 
@@ -33,16 +34,19 @@ const App = () => /* const TimeOutAnimation = useRef()*/ /* const [AnimationStat
         {/* <Routes>
           <Route path="/*" element={<CustomerRoutes />} />
         </Routes> */}
+        <Routes>
+          <Route path="/*" element={<FetchData />} />
+        </Routes>
 
         {/* <Routes>
           <Route path="/*" element={<InfluencerRoutes />} />
         </Routes> */}
 
 
-
 {/* <PasswordInput/> */}
           {/* <ForgotPassword/> */}
-        <Routes>
+
+        {/* <Routes>
 
           <Route path="/users/:id/reset-password/:token" element={<PasswordReset />} />
           <Route path="/users/:id/verify/:token" element={<EmailVerify />} />
@@ -59,7 +63,7 @@ const App = () => /* const TimeOutAnimation = useRef()*/ /* const [AnimationStat
 
           <Route path="/*" element={<Authentication />} />
       
-        </Routes>
+        </Routes> */}
 
 
             

@@ -1,9 +1,29 @@
 
 import { useNavigate } from 'react-router-dom';
 import TaskTable from '../../../../../Components/Table/TaskTable';
+import useFetch from '../../../../../Hooks/useFetch';
 
 const Queries = () => {
   const navigate = useNavigate();
+
+  const url = `${import.meta.env.VITE_SERVER_BASE_URL}`;
+  const { data, loading, error } = useFetch(`${url}/Support/Statistics`);
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error}</p>;
+
+
+
+  const data1 = [
+    { name: 'Contract', value: parseInt(data.Contract) },
+    { name: 'Payment', value: parseInt(data.Payment)},
+    { name: 'Account', value:parseInt(data.Account )},
+    { name: 'Others', value: parseInt(data.Others)},
+  ];
+
+
+
+  const totalUsers = data1.reduce((acc, item) => acc + item.value, 0);
 
 
  
@@ -19,7 +39,7 @@ const Queries = () => {
           <div className="mr-1" >
             <p className="text-black/50 poppins-regula text-[7px] sm:text-[10px] mdm:text-[12px]">Total Queries</p>
             <div className="flex justify-between">
-              <p className="poppins-semibold text-[7px] sm:text-[10px] mdm:text-[12px]"><span className="text-primary">10,000</span> </p>
+              <p className="poppins-semibold text-[7px] sm:text-[10px] mdm:text-[12px]"><span className="text-primary">{totalUsers}</span> </p>
             </div>
           </div>
 
@@ -28,7 +48,7 @@ const Queries = () => {
 
           <div className="pl-1 mdm:pl-10  flex flex-col items-center ">
             <p className="text-black/50 poppins-regular text-[7px] sm:text-[10px] mdm:text-[12px] ">Progress</p>
-            <p className="poppins-semibold text-[7px] sm:text-[10px] mdm:text-[12px]">1</p>
+            <p className="poppins-semibold text-[7px] sm:text-[10px] mdm:text-[12px]">{data.Progress}</p>
           </div>
 
            {/* Left border */}
@@ -36,7 +56,7 @@ const Queries = () => {
 
           <div className=" pl-1 mdm:pl-10 flex flex-col items-center text-[7px] sm:text-[10px] ">
             <p className="text-black/50 poppins-regular  mdm:text-[12px]">Pending</p>
-            <p className="poppins-semibold mdm:text-[12px]">10</p>
+            <p className="poppins-semibold mdm:text-[12px]">{data.Pending}</p>
           </div>
 
            {/* Left border */}
@@ -44,7 +64,7 @@ const Queries = () => {
 
           <div className=" pl-1 mdm:pl-10 flex flex-col items-center text-[7px] sm:text-[10px] mdm:text-[12px]">
             <p className="text-black/50 poppins-regular ">Resolved</p>
-            <p className="poppins-semibold  text-green-500">2.5K</p>
+            <p className="poppins-semibold  text-green-500">{data.Resolved}</p>
           </div>
 
         </div>

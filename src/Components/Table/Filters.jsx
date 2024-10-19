@@ -6,6 +6,8 @@ const Filters = ({ columnFilters , setColumnFilters }) => {
 
   const onFilterChange = (id, value) => {
     setColumnFilters((prev) => {
+      console.log("previous filter are")
+      console.log(prev)
       const existingFilterIndex = prev.findIndex((f) => f.id === id);
       const updatedFilters = [...prev];
       
@@ -25,7 +27,7 @@ const Filters = ({ columnFilters , setColumnFilters }) => {
       <div className="relative ">
         <input
           type="text"
-          placeholder="Search"
+          placeholder="Search here"
           value={taskName}
           onChange={(e) => onFilterChange("user", e.target.value)}
           className="flex w-[200px] sm:w-[300px] rounded-2xl h-8 md:h-10 border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"

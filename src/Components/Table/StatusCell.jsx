@@ -27,13 +27,11 @@ export const ColorIcon = ({ color, ...props }) => (
 
 const StatusCell = ({ getValue, row, column, table }) => {
   
-  const { name, color } = getValue() || {};
+  const { name } = getValue() || {};
   
-  const { updateData } = table.options.meta;
   const [isOpen, setIsOpen] = useState(false);
 
   // Determine the background color based on status name
-  const statusColor = STATUS_COLORS[name] || color || 'transparent';
   // ColorBorder, Status, TextColor
 
   return (

@@ -3,7 +3,8 @@ import { useState, useRef } from 'react';
 const Modal = ({ rowData, onClose }) => {
     const contractLinkRef = useRef(null);
     const [isAttachmentModalVisible, setAttachmentModalVisible] = useState(false);
-    console.log("id is "+rowData.original.id)
+    console.log("id is ")
+    console.log(rowData)
 
     if (!rowData) return null;
 
@@ -25,7 +26,7 @@ const Modal = ({ rowData, onClose }) => {
     const handleCloseAttachment = () => {
         setAttachmentModalVisible(false);
     };
-    const url = `${import.meta.env.VITE_SERVER_BASE_URL}/Queries/contract`;
+    const url = `${import.meta.env.VITE_REACT_APP_BASE_URL}/Queries/contract`;
     return (
 
         <>
@@ -44,17 +45,17 @@ const Modal = ({ rowData, onClose }) => {
                         <div className="flex">
                             <img
                                 className="hidden sm:block size-[35px] Avatar"
-                                src={`/Media/${rowData.original.user.img}`}
+                                src={`/Media/${rowData.user.img}`}
                                 alt=""
                             />
                             <div className="flex flex-1 flex-col ml-2">
                                 <div className="flex flex-1 justify-between items-center">
                                     <p className="poppins-semibold">
-                                        {rowData.original.user.name}
+                                        {rowData.user.name}
                                     </p>
                                 </div>
                                 <div className="flex justify-between text-black/50 text-[12px]">
-                                    <p>{rowData.original.user.username}</p>
+                                    <p>{rowData.user.username}</p>
                                 </div>
                             </div>
                         </div>
@@ -70,39 +71,39 @@ const Modal = ({ rowData, onClose }) => {
                     </div>
 
                     <div className="mx-5">
-                   { (rowData.original.issue==='Contract' || rowData.original.issue==='Payment') && 
-                        <div className="flex justify-between lato-black text-[14px] poppins-regular items-center mt-5">
-                            <div>
-                                <p className="poppins-bold text-center">Issue</p>
-                                <div className="DealsBorder-v2 mt-2">
-                                    <p className="font-medium text-black/50 py-1">
-                                        Instagram
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div>
-                                <p className="poppins-bold text-center">Contract Link</p>
-                                <div className="flex items-center gap-x-2 mt-2 py-2">
-                                    <input
-                                        type="text"
-                                        readOnly
-                                        className="border-[1px] rounded-3xl outline-none font-normal w-[200px] px-3 pr-10 py-[6px] text-black/50"
-                                        ref={contractLinkRef}
-                                        defaultValue={`${url}`}
-                                    />
-                                    <div
-                                        className="OrangeButtonWithText-v4 py-[7px] text-[12px] flex items-center cursor-pointer"
-                                        onClick={handleOpenContractLink}
-                                    >
-                                        <p>Open</p>
+                        {(rowData.issue === 'Contract' || rowData.issue === 'Payment') &&
+                            <div className="flex justify-between lato-black text-[14px] poppins-regular items-center mt-5">
+                                <div>
+                                    <p className="poppins-bold text-center">Issue</p>
+                                    <div className="DealsBorder-v2 mt-2">
+                                        <p className="font-medium text-black/50 py-1">
+                                            Instagram
+                                        </p>
                                     </div>
                                 </div>
+
+                                <div>
+                                    <p className="poppins-bold text-center">Contract Link</p>
+                                    <div className="flex items-center gap-x-2 mt-2 py-2">
+                                        <input
+                                            type="text"
+                                            readOnly
+                                            className="border-[1px] rounded-3xl outline-none font-normal w-[200px] px-3 pr-10 py-[6px] text-black/50"
+                                            ref={contractLinkRef}
+                                            defaultValue={`${url}`}
+                                        />
+                                        <div
+                                            className="OrangeButtonWithText-v4 py-[7px] text-[12px] flex items-center cursor-pointer"
+                                            onClick={handleOpenContractLink}
+                                        >
+                                            <p>Open</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+
                             </div>
-
-
-                        </div>
-}
+                        }
 
                         <div className="text-[14px] mt-5">
                             <p className="poppins-bold">Description</p>
@@ -147,7 +148,7 @@ const Modal = ({ rowData, onClose }) => {
                             Send
                         </button>
                     </div>
-                    
+
                 </div>
             </div>
 
@@ -164,7 +165,7 @@ const Modal = ({ rowData, onClose }) => {
                         <p className="poppins-semibold text-center mt-4">Attachment</p>
                         <div className="mt-4 flex justify-center items-center">
                             <img
-                                src={`${rowData.original.attachment}`}
+                                src={`${rowData.attachment}`}
                                 alt="User attachment"
                                 className="w-full h-[600px] object-cover "
                             />

@@ -226,6 +226,7 @@ const CompanyDetails = ({ nextStep, onChange }) => {
 
   const [data, setData] = useState({
     brandName: '',
+    brandUserName: '',
     websiteLink: '',
     category: 'Fashion',
     photo: null,
@@ -263,17 +264,22 @@ const CompanyDetails = ({ nextStep, onChange }) => {
 
 
     // Check if all the values are added (no value is null or empty) and image is uploaded /api/users/brand/check-brand
-    if (data.brandName && data.websiteLink && data.category && data.photo) {
+    if (data.brandName && data.websiteLink && data.category && data.photo && data.brandUserName) {
       try {
         // Make an Axios request to check if the brand name exists
         const response = await axios.post(`${url}/api/users/Brand/CompleteProfile/check-brandName`, { brandName: data.brandName });
+        const response2 = await axios.post(`${url}/api/users/Brand/CompleteProfile/check-brandUsername`, { brandUserName: data.brandUserName });
 
         // Assume the backend returns { exists: true } if the brand exists
-        console.log("in Company details  reponse is ");
         console.log(response.data);
         if (response.data.exists) {
           setError('This brand name is already taken. Please choose a different name.');
-        } else {
+        } else if( response2.data.exists){
+          setError('This user name is already taken. Please choose a different name.');
+
+        }
+        
+        else  {
           // If the brand name is not taken, proceed with the next step
           setError(''); // Clear error if everything is valid
           onChange(data);
@@ -301,6 +307,14 @@ const CompanyDetails = ({ nextStep, onChange }) => {
               onChange={handleInputChange}
               className="p-2 poppins-light InputBorder w-[150px] mdm:w-[250px] rounded-xl"
             />
+            <h5 className="poppins-regular mt-1">User Name</h5>
+            <input
+              name="brandUserName"
+              value={data.brandUserName}
+              onChange={handleInputChange}
+              className="p-2 poppins-light InputBorder w-[150px] mdm:w-[250px] rounded-xl"
+            />
+
             <h5 className="poppins-regular mt-1 pb-1">Website Link</h5>
             <input
               name="websiteLink"
