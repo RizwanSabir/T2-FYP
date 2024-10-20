@@ -22,7 +22,7 @@ import Modal from './UserModel';
 
 
 
-const TaskTable = ({ DATA ,pagination,setPagination,pageCount,totalUsers }) => {
+const TaskTableUser = ({ DATA ,pagination,setPagination,pageCount,totalUsers }) => {
 
   const [data, setData] = useState(DATA);
   const [selectedRows, setSelectedRows] = useState({});
@@ -80,13 +80,7 @@ const TaskTable = ({ DATA ,pagination,setPagination,pageCount,totalUsers }) => {
 
   // Define the columns based on the current screen size
   const columns = [
-    {
-      accessorKey: 'user',
-      header: 'User',
-      cell: User,
-      size: (screenSize === 'xxs' || screenSize === 'xs' || screenSize === 'sm') ? 20 : 200, // Dynamically adjust size
-      enableColumnFilter: true,
-    },
+    
 
 
     // Conditionally include the Description column only on larger screens
@@ -110,7 +104,7 @@ const TaskTable = ({ DATA ,pagination,setPagination,pageCount,totalUsers }) => {
           accessorKey: 'description',
           header: 'Description',
           cell: (props) => <p className="poppins-semibold text-[#1a3048cc]">{props.getValue()}</p>,
-          size: getColumnSize(150),
+          size: getColumnSize(180),
         },
       ]
       : ""), // Exclude Description column on small screens
@@ -337,4 +331,4 @@ const TableHeader = ({ table, }) => {
 
 
 
-export default TaskTable;
+export default TaskTableUser;

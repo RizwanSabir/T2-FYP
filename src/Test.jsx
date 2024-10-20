@@ -1,301 +1,226 @@
 import React from 'react'
-import ReactDOM from 'react-dom/client'
 
-import './index.css'
+const Test = () => {
 
-import {
-  Column,
-  ColumnDef,
-  PaginationState,
-  Table,
-  flexRender,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
-} from '@tanstack/react-table'
-
-import { makeData, Person } from './makeData'
-
-function App() {
-  const rerender = React.useReducer(() => ({}), {})[1]
-
-  const columns = React.useMemo<ColumnDef<Person>[]>(
-    () => [
-      {
-        accessorKey: 'firstName',
-        cell: info => info.getValue(),
-        footer: props => props.column.id,
-      },
-      {
-        accessorFn: row => row.lastName,
-        id: 'lastName',
-        cell: info => info.getValue(),
-        header: () => <span>Last Name</span>,
-        footer: props => props.column.id,
-      },
-      {
-        accessorKey: 'age',
-        header: () => 'Age',
-        footer: props => props.column.id,
-      },
-      {
-        accessorKey: 'visits',
-        header: () => <span>Visits</span>,
-        footer: props => props.column.id,
-      },
-      {
-        accessorKey: 'status',
-        header: 'Status',
-        footer: props => props.column.id,
-      },
-      {
-        accessorKey: 'progress',
-        header: 'Profile Progress',
-        footer: props => props.column.id,
-      },
-    ],
-    []
-  )
-
-  const [data, setData] = React.useState(() => makeData(100000))
-  const refreshData = () => setData(() => makeData(100000))
-
-  return (
-    <>
-      <MyTable
-        {...{
-          data,
-          columns,
-        }}
-      />
-      <hr />
-      <div>
-        <button onClick={() => rerender()}>Force Rerender</button>
-      </div>
-      <div>
-        <button onClick={() => refreshData()}>Refresh Data</button>
-      </div>
-    </>
-  )
-}
-
-function MyTable({
-  data,
-  columns,
-}: {
-  data: Person[]
-  columns: ColumnDef<Person>[]
-}) {
-  const [pagination, setPagination] = React.useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: 10,
-  })
-
-  const table = useReactTable({
-    columns,
-    data,
-    debugTable: true,
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    onPaginationChange: setPagination,
-    //no need to pass pageCount or rowCount with client-side pagination as it is calculated automatically
-    state: {
-      pagination,
-    },
-    // autoResetPageIndex: false, // turn off page index reset when sorting or filtering
-  })
-
-  return (
-    <div className="p-2">
-      <div className="h-2" />
-      <table>
-        <thead>
-          {table.getHeaderGroups().map(headerGroup => (
-            <tr key={headerGroup.id}>
-              {headerGroup.headers.map(header => {
-                return (
-                  <th key={header.id} colSpan={header.colSpan}>
-                    <div
-                      {...{
-                        className: header.column.getCanSort()
-                          ? 'cursor-pointer select-none'
-                          : '',
-                        onClick: header.column.getToggleSortingHandler(),
-                      }}
-                    >
-                      {flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
-                      {{
-                        asc: ' 🔼',
-                        desc: ' 🔽',
-                      }[header.column.getIsSorted() as string] ?? null}
-                      {header.column.getCanFilter() ? (
-                        <div>
-                          <Filter column={header.column} table={table} />
-                        </div>
-                      ) : null}
-                    </div>
-                  </th>
-                )
-              })}
-            </tr>
-          ))}
-        </thead>
-        <tbody>
-          {table.getRowModel().rows.map(row => {
-            return (
-              <tr key={row.id}>
-                {row.getVisibleCells().map(cell => {
-                  return (
-                    <td key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </td>
-                  )
-                })}
-              </tr>
-            )
-          })}
-        </tbody>
-      </table>
-      <div className="h-2" />
-      <div className="flex items-center gap-2">
-        <button
-          className="border rounded p-1"
-          onClick={() => table.firstPage()}
-          disabled={!table.getCanPreviousPage()}
-        >
-          {'<<'}
-        </button>
-        <button
-          className="border rounded p-1"
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
-        >
-          {'<'}
-        </button>
-        <button
-          className="border rounded p-1"
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}
-        >
-          {'>'}
-        </button>
-        <button
-          className="border rounded p-1"
-          onClick={() => table.lastPage()}
-          disabled={!table.getCanNextPage()}
-        >
-          {'>>'}
-        </button>
-        <span className="flex items-center gap-1">
-          <div>Page</div>
-          <strong>
-            {table.getState().pagination.pageIndex + 1} of{' '}
-            {table.getPageCount().toLocaleString()}
-          </strong>
-        </span>
-        <span className="flex items-center gap-1">
-          | Go to page:
-          <input
-            type="number"
-            min="1"
-            max={table.getPageCount()}
-            defaultValue={table.getState().pagination.pageIndex + 1}
-            onChange={e => {
-              const page = e.target.value ? Number(e.target.value) - 1 : 0
-              table.setPageIndex(page)
-            }}
-            className="border p-1 rounded w-16"
-          />
-        </span>
-        <select
-          value={table.getState().pagination.pageSize}
-          onChange={e => {
-            table.setPageSize(Number(e.target.value))
-          }}
-        >
-          {[10, 20, 30, 40, 50].map(pageSize => (
-            <option key={pageSize} value={pageSize}>
-              Show {pageSize}
-            </option>
-          ))}
-        </select>
-      </div>
-      <div>
-        Showing {table.getRowModel().rows.length.toLocaleString()} of{' '}
-        {table.getRowCount().toLocaleString()} Rows
-      </div>
-      <pre>{JSON.stringify(table.getState().pagination, null, 2)}</pre>
-    </div>
-  )
-}
-
-function Filter({
-  column,
-  table,
-}: {
-  column: Column<any, any>
-  table: Table<any>
-}) {
-  const firstValue = table
-    .getPreFilteredRowModel()
-    .flatRows[0]?.getValue(column.id)
-
-  const columnFilterValue = column.getFilterValue()
-
-  return typeof firstValue === 'number' ? (
-    <div className="flex space-x-2" onClick={e => e.stopPropagation()}>
-      <input
-        type="number"
-        value={(columnFilterValue as [number, number])?.[0] ?? ''}
-        onChange={e =>
-          column.setFilterValue((old: [number, number]) => [
-            e.target.value,
-            old?.[1],
-          ])
+    // const users = [
+    //     { name: 'John Doe', username: 'johndoe1', img: 'https://picsum.photos/35/35' },
+    //     { name: 'Jane Smith', username: 'janesmith2', img: 'https://picsum.photos/35/35' },
+    //     { name: 'Alice Johnson', username: 'alicejohnson3', img: 'https://picsum.photos/35/35' },
+    //     { name: 'Bob Brown', username: 'bobbrown4', img: 'https://picsum.photos/35/35' },
+    //     { name: 'Charlie Davis', username: 'charliedavis5', img: 'https://picsum.photos/35/35' },
+    //     { name: 'Eve Miller', username: 'evemiller6', img: 'https://picsum.photos/35/35' },
+    //     { name: 'Frank Green', username: 'frankgreen7', img: 'https://picsum.photos/35/35' },
+    //     { name: 'Grace White', username: 'gracewhite8', img: 'https://picsum.photos/35/35' },
+    //     { name: 'Henry Adams', username: 'henryadams9', img: 'https://picsum.photos/35/35' },
+    //     { name: 'Ivy Brooks', username: 'ivybrooks10', img: 'https://picsum.photos/35/35' },
+    //     { name: 'Jack Carter', username: 'jackcarter11', img: 'https://picsum.photos/35/35' },
+    //     { name: 'Karen Young', username: 'karenyoung12', img: 'https://picsum.photos/35/35' },
+    //     { name: 'Liam Hall', username: 'liamhall13', img: 'https://picsum.photos/35/35' },
+    //     { name: 'Mia Turner', username: 'miaturner14', img: 'https://picsum.photos/35/35' },
+    //     { name: 'Nathan Scott', username: 'nathanscott15', img: 'https://picsum.photos/35/35' },
+    //     { name: 'Olivia Clark', username: 'oliviaclark16', img: 'https://picsum.photos/35/35' },
+    //     { name: 'Paul Lewis', username: 'paullewis17', img: 'https://picsum.photos/35/35' },
+    //     { name: 'Quinn Walker', username: 'quinnwalker18', img: 'https://picsum.photos/35/35' },
+    //     { name: 'Rachel King', username: 'rachelking19', img: 'https://picsum.photos/35/35' },
+    //     { name: 'Steve Hill', username: 'stevehill20', img: 'https://picsum.photos/35/35' }
+    // ];
+    
+    const issueDataArray = [
+        {
+            userId: "6714f1b3ac28d0caf59b61e3", 
+            issue: "Other",
+            description: "The website goes down intermittently, preventing customers from accessing the service.",
+            status: "Pending",
+            attachment: "https://picsum.photos/500/500",
+            contractLink: "https://example.com/contract.pdf"
+        },
+        {
+            userId: "6714f1b3ac28d0caf59b61e3", 
+            issue: "Other",
+            description: "Users are unable to log in, and an error message is shown.",
+            status: "Pending",
+            attachment: "https://picsum.photos/500/500",
+            contractLink: "https://example.com/contract.pdf"
+        },
+        {
+            userId: "6714f1b3ac28d0caf59b61e3", 
+            issue: "Contract",
+            description: "The homepage takes too long to load.",
+            status: "Pending",
+            attachment: "https://picsum.photos/500/500",
+            contractLink: "https://example.com/contract.pdf"
+        },
+        {
+            userId: "6714f1b3ac28d0caf59b61e3", 
+            issue: "Payment",
+            description: "The search bar does not return any results.",
+            status: "Pending",
+            attachment: "https://picsum.photos/500/500",
+            contractLink: "https://example.com/contract.pdf"
+        },
+        {
+            userId: "6714f1b3ac28d0caf59b61e3", 
+            issue: "Contract",
+            description: "Users encounter a 404 error when accessing certain pages.",
+            status: "Pending",
+            attachment: "https://picsum.photos/500/500",
+            contractLink: "https://example.com/contract.pdf"
+        },
+        {
+            userId: "6714f45fac28d0caf59b61e5", 
+            issue: "Payment",
+            description: "Users are unable to complete transactions due to payment issues.",
+            status: "Pending",
+            attachment: "https://picsum.photos/500/500",
+            contractLink: "https://example.com/contract.pdf"
+        },
+        {
+            userId: "6714f45fac28d0caf59b61e5", 
+            issue: "Contract",
+            description: "The user's profile page takes too long to load or times out.",
+            status: "Pending",
+            attachment: "https://picsum.photos/500/500",
+            contractLink: "https://example.com/contract.pdf"
+        },
+        {
+            userId: "6714f45fac28d0caf59b61e5", 
+            issue: "Payment",
+            description: "Some product images are not displaying on the product pages.",
+            status: "Pending",
+            attachment: "https://picsum.photos/500/500",
+            contractLink: "https://example.com/contract.pdf"
+        },
+        {
+            userId: "6714f45fac28d0caf59b61e5", 
+            issue: "Contract",
+            description: "The website does not render well on mobile devices.",
+            status: "Pending",
+            attachment: "https://picsum.photos/500/500",
+            contractLink: "https://example.com/contract.pdf"
+        },
+        {
+            userId: "6714f45fac28d0caf59b61ed", 
+            issue: "Other",
+            description: "Users are not receiving email notifications for account activities.",
+            status: "Pending",
+            attachment: "https://picsum.photos/500/500",
+            contractLink: "https://example.com/contract.pdf"
+        },
+        {
+            userId: "6714f45fac28d0caf59b61ed", 
+            issue: "Payment",
+            description: "Users are requesting a dark mode feature for the website.",
+            status: "Pending",
+            attachment: "https://picsum.photos/500/500",
+            contractLink: "https://example.com/contract.pdf"
+        },
+        {
+            userId: "6714f45fac28d0caf59b61ed", 
+            issue: "Contract",
+            description: "There is a bug in the checkout process causing errors.",
+            status: "Pending",
+            attachment: "https://picsum.photos/500/500",
+            contractLink: "https://example.com/contract.pdf"
+        },
+        {
+            userId: "6714f45fac28d0caf59b61ed", 
+            issue: "Other",
+            description: "Users are unable to submit feedback through the feedback form.",
+            status: "Pending",
+            attachment: "https://picsum.photos/500/500",
+            contractLink: "https://example.com/contract.pdf"
+        },
+        {
+            userId: "6714f45fac28d0caf59b61ed", 
+            issue: "Payment",
+            description: "The website is not properly localized for different regions.",
+            status: "Pending",
+            attachment: "https://picsum.photos/500/500",
+            contractLink: "https://example.com/contract.pdf"
+        },
+        {
+            userId: "6712a32feccb10ce610143d4", 
+            issue: "Account",
+            description: "Analytics data is not updating in real-time.",
+            status: "Pending",
+            attachment: "https://picsum.photos/500/500",
+            contractLink: "https://example.com/contract.pdf"
+        },
+        {
+            userId: "6712a32feccb10ce610143d4", 
+            issue: "Contract",
+            description: "Some content is not displaying correctly on the website.",
+            status: "Pending",
+            attachment: "https://picsum.photos/500/500",
+            contractLink: "https://example.com/contract.pdf"
+        },
+        {
+            userId: "6712a36beccb10ce610143ee", 
+            issue: "Payment",
+            description: "The API response times are slow, affecting user experience.",
+            status: "Pending",
+            attachment: "https://picsum.photos/500/500",
+            contractLink: "https://example.com/contract.pdf"
+        },
+        {
+            userId: "6712a36beccb10ce610143ee", 
+            issue: "Other",
+            description: "Data is lost when a user deletes their account.",
+            status: "Pending",
+            attachment: "https://picsum.photos/500/500",
+            contractLink: "https://example.com/contract.pdf"
+        },
+        {
+            userId: "6712a36beccb10ce610143ee", 
+            issue: "Account",
+            description: "Users are reporting inconsistent experiences across different browsers.",
+            status: "Pending",
+            attachment: "https://picsum.photos/500/500",
+            contractLink: "https://example.com/contract.pdf"
         }
-        placeholder={`Min`}
-        className="w-24 border shadow rounded"
-      />
-      <input
-        type="number"
-        value={(columnFilterValue as [number, number])?.[1] ?? ''}
-        onChange={e =>
-          column.setFilterValue((old: [number, number]) => [
-            old?.[0],
-            e.target.value,
-          ])
+    ];
+    
+    const addUser = async (userData) => {
+        try {
+            const response = await fetch('http://localhost:8080/addIssue', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(userData),  // Convert JS object to JSON string
+            });
+    
+            if (response.ok) {
+                const data = await response.json();
+                console.log('User added:', data);
+            } else {
+                const errorData = await response.json();
+                console.error('Error:', errorData);
+            }
+        } catch (error) {
+            console.error('Error making fetch request:', error);
         }
-        placeholder={`Max`}
-        className="w-24 border shadow rounded"
-      />
-    </div>
-  ) : (
-    <input
-      className="w-36 border shadow rounded"
-      onChange={e => column.setFilterValue(e.target.value)}
-      onClick={e => e.stopPropagation()}
-      placeholder={`Search...`}
-      type="text"
-      value={(columnFilterValue ?? '') as string}
-    />
+    };
+    // Function to add all users
+    const addMultipleUsers = async (users) => {
+        for (let i=0;i<20;i++ ) {
+            await addUser(users[i]);
+        }
+    };
+    
+    // Call the function to add all 20 users
+    
+    
+   
+    
+    
+    
+return (
+<>
+
+<button onClick={() => { addMultipleUsers(issueDataArray) }}>Click me to start</button>
+</>
   )
 }
 
-const rootElement = document.getElementById('root')
-if (!rootElement) throw new Error('Failed to find the root element')
-
-ReactDOM.createRoot(rootElement).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-)
+export default Test

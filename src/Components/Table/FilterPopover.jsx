@@ -4,6 +4,7 @@ import { ColorIcon } from "./StatusCell";
 import { FilterIcon } from "./FilterIcon";
 
 const StatusItem = ({ status, setColumnFilters, isActive }) => (
+  
   <div
     className={`flex items-center cursor-pointer rounded-lg font-bold py-2 sm:p-2 ${isActive ? "text-orange-500" : "bg-transparent"
       } hover:text-orange-500`}

@@ -2,6 +2,7 @@
 import { useNavigate } from 'react-router-dom';
 import TaskTable from '../../../../../Components/Table/TaskTable';
 import useFetch from '../../../../../Hooks/useFetch';
+import FetchData from '../../../../../Components/Table/FetchData';
 
 const Queries = () => {
   const navigate = useNavigate();
@@ -30,7 +31,7 @@ const Queries = () => {
   return (
     <>
       {/* Top bar total posted ,active comapign */}
-      <div className="pt-5 mx-5  mdm:mx-auto mdm:w-[800px]   overflow-x-auto ">
+      <div className="py-5 mx-5  mdm:mx-auto mdm:w-[800px]     ">
 
         {/* Information bar of whole campaign */}
 
@@ -70,8 +71,8 @@ const Queries = () => {
         </div>
 
         <p className="lato-bold  mt-5">Queries</p>
-   
-        <TaskTable/>
+      
+       <FetchData/>
 
 
        

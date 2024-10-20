@@ -3,13 +3,14 @@ import TaskTable from './TaskTable';
 import Filters from './Filters';
 import Loader from '../Loaders';
 import CustomLoader from '../Loaders/CustomLoader';
+import TaskTableUser from './TaskTableUser';
 
 // Status constants
 const STATUS_PENDING = { id: 1, name: "Pending" };
 const STATUS_IN_REVIEW = { id: 2, name: "In Review" };
 const STATUS_RESOLVED = { id: 3, name: "Resolved" };
 
-const FetchData = () => {
+const FetchDataUser = () => {
   const [data, setData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterValue, setFilterValue] = useState("");  // Status filter from the dropdown
@@ -36,10 +37,11 @@ const FetchData = () => {
 
   // Fetch data function
   const fetchData = async () => {
+    const userId='6714f1b3ac28d0caf59b61e3'
     setLoading(true); // Set loading state to true when fetching starts
     try {
       const statusQuery = filterValue ? `&filter=${filterValue}` : ''; // Add status filter if selected
-      const url = `${import.meta.env.VITE_SERVER_BASE_URL}/Support/issues?page=${pagination.pageIndex + 1}&search=${searchTerm}${statusQuery}`;
+      const url = `${import.meta.env.VITE_SERVER_BASE_URL}/Support/User/issues?page=${pagination.pageIndex + 1}&userId=${userId}&search=${searchTerm}${statusQuery}`;
       const response = await fetch(url);
       const result = await response.json();
       console.log("result is ")
@@ -53,7 +55,7 @@ const FetchData = () => {
 
      
       
-      setData([results,result.totalPages,result.totalUsers]);
+      setData([results,result.totalPages,result.totalIssues]);
     } catch (error) {
       console.error('Error fetching data:', error);
     } finally {
@@ -76,7 +78,7 @@ const FetchData = () => {
   return (
     <>
       <div className='text-[9px] sm:text-[10px] mdm:text-[12px] flex justify-center flex-col items-center montserrat poppins-regular mt-5 mb-10 w-full'>
-        <div className="bg-white p-4 rounded-xl lg:w-[800px]">
+        <div className="bg-white p-4 rounded-xl lg:w-[600px]">
           {/* Always show Filters component */}
           <Filters searchTerm={searchTerm} setSearchTerm={setSearchTerm} setFilterValue={setFilterValue} />
 
@@ -85,7 +87,7 @@ const FetchData = () => {
             {loading ? (
               <CustomLoader/>  // Show loading message when data is being fetched
             ) : (
-              <TaskTable
+              <TaskTableUser
                 DATA={data[0]}
                 pageCount={data[1]}
                 totalUsers={data[2]}
@@ -100,4 +102,4 @@ const FetchData = () => {
   );
 };
 
-export default FetchData;
+export default FetchDataUser;

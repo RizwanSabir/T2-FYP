@@ -19,8 +19,10 @@ import CustomerRoutes from './Layout/CustomerService/CustomerRoutes';
 import IssueProfile from './Components/Model/IssueProfile';
 import InfluencerRoutes from './Layout/Influencer/InfluencerRoutes';
 import FetchData from './Components/Table/FetchData';
+import UserIssue from './Layout/CustomerService/DashBoard/Pages/UserPage/UserIssue';
+import Test from './Test';
 
-const App = () => /* const TimeOutAnimation = useRef()*/ /* const [AnimationState, setAnimationState] = useState(true)*/ /* useEffect(() => {*/ /*    let  TimeOutAnimation=setTimeout(() => {*/ /*     setAnimationState(false)*/ /*    },8000)*/ /* })*/ (
+const App = () => /* const TimeOutAnimation = useRef()*/ /* const [AnimationState, setAnimationState] = useState(true)*/ /* useEffect(() => {*/ /*    let  TimeOutAnimation=setTimeout(() => {*/ /*     setAnimationState(false)*/ /*    },8000)*/ /* })*/(
 
   <>
     <div className=" ">
@@ -35,7 +37,7 @@ const App = () => /* const TimeOutAnimation = useRef()*/ /* const [AnimationStat
           <Route path="/*" element={<CustomerRoutes />} />
         </Routes> */}
         <Routes>
-          <Route path="/*" element={<FetchData />} />
+          <Route path="/*" element={< UserIssue/>} />
         </Routes>
 
         {/* <Routes>
@@ -43,8 +45,8 @@ const App = () => /* const TimeOutAnimation = useRef()*/ /* const [AnimationStat
         </Routes> */}
 
 
-{/* <PasswordInput/> */}
-          {/* <ForgotPassword/> */}
+        {/* <PasswordInput/> */}
+        {/* <ForgotPassword/> */}
 
         {/* <Routes>
 
@@ -66,7 +68,7 @@ const App = () => /* const TimeOutAnimation = useRef()*/ /* const [AnimationStat
         </Routes> */}
 
 
-            
+
 
 
       </BrowserRouter>
